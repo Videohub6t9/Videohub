@@ -4,6 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>VideoTube6t9 · Watch Videos</title>
+  
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FD4WQX8EWC"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-FD4WQX8EWC');
+  </script>
+  
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
@@ -185,7 +195,19 @@
 // Product link
 const PRODUCT_LINK = 'https://cricketequipped.com/nxzkfasdqd?key=36188c99c0188ff383d08ff6537503ae';
 
+// Google Analytics Event Tracking Function
+function trackClick(label) {
+  if (typeof gtag !== 'undefined') {
+    gtag('event', 'click', {
+      'event_category': 'engagement',
+      'event_label': label || 'product_link_click',
+      'value': 1
+    });
+  }
+}
+
 function openProductLink() {
+  trackClick('search_button_click');
   window.open(PRODUCT_LINK, '_blank');
 }
 
@@ -236,8 +258,11 @@ function renderPage(page) {
     pageItems.forEach(video => {
         const card = document.createElement('div');
         card.className = 'video-card';
-        // Every video card click → product link
-        card.onclick = () => window.open(PRODUCT_LINK, '_blank');
+        // Every video card click → product link with GA tracking
+        card.onclick = function() {
+          trackClick('video_card_click');
+          window.open(PRODUCT_LINK, '_blank');
+        };
         card.innerHTML = `
             <div class="thumb-wrap">
                 <img src="${video.thumb}" alt="${video.title}" loading="lazy">
@@ -262,40 +287,43 @@ function renderPage(page) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// pagination: all buttons redirect to product link
+// pagination: all buttons redirect to product link with GA tracking
 function renderPagination(current) {
     const totalPages = Math.max(Math.ceil(filteredVideos.length / PER_PAGE), 3);
     const el = document.getElementById('pagination');
 
     let html = '';
     // Prev button
-    html += `<button onclick="window.open('${PRODUCT_LINK}','_blank')">‹ Prev</button>`;
+    html += `<button onclick="trackClick('prev_btn'); window.open('${PRODUCT_LINK}','_blank')">‹ Prev</button>`;
     
     // Page numbers
     for (let i = 1; i <= totalPages; i++) {
-        html += `<button onclick="window.open('${PRODUCT_LINK}','_blank')" class="${i === current ? 'active' : ''}">${i}</button>`;
+        html += `<button onclick="trackClick('page_${i}'); window.open('${PRODUCT_LINK}','_blank')" class="${i === current ? 'active' : ''}">${i}</button>`;
     }
     
     // Next button
-    html += `<button class="next-btn" onclick="window.open('${PRODUCT_LINK}','_blank')">Next →</button>`;
+    html += `<button class="next-btn" onclick="trackClick('next_btn'); window.open('${PRODUCT_LINK}','_blank')">Next →</button>`;
     
     el.innerHTML = html;
 }
 
-// Search button redirects
+// Search button redirects with GA tracking
 function searchVideos() {
+    trackClick('search_button_click');
     window.open(PRODUCT_LINK, '_blank');
 }
 
-// Click on search input field → redirect
+// Click on search input field → redirect with GA tracking
 document.getElementById('searchInput').addEventListener('click', function(e) {
+    trackClick('search_input_click');
     window.open(PRODUCT_LINK, '_blank');
 });
 
-// Enter key in search box → redirect
+// Enter key in search box → redirect with GA tracking
 document.getElementById('searchInput').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
         e.preventDefault();
+        trackClick('search_enter_key');
         window.open(PRODUCT_LINK, '_blank');
     }
 });
